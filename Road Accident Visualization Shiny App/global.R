@@ -90,8 +90,8 @@ state_group$state_name <-
 ######################################
 # Download India Map GeoJson file
 ######################################
-#mapdata <-
-  #get_data_from_map(download_map_data("countries/in/custom/in-all-andaman-and-nicobar"))
+mapdata <-
+  get_data_from_map(download_map_data("countries/in/custom/in-all-andaman-and-nicobar"))
 
 ######################################
 # Correcting the data to match the data frames
@@ -100,23 +100,22 @@ state_group$state_name <-
 
 state_group$state_name <- as.factor(state_group$state_name)
 # Get the codes for all the states
-#hcmap.state_codes <-
-  #dplyr::select(filter(
-   # mapdata,
-    #tolower(mapdata$name) %in% tolower(state_group$state_name)
- # ), c("hc-a2", "name"))
-#View(hcmap.state_codes)
-#hcmap.state_codes$name <- toupper(hcmap.state_codes$name)
+hcmap.state_codes <-
+  dplyr::select(filter(
+    mapdata,
+    tolower(mapdata$name) %in% tolower(state_group$state_name)
+  ), c("hc-a2", "name"))
+hcmap.state_codes$name <- toupper(hcmap.state_codes$name)
 state_group$state_name <- toupper(state_group$state_name)
 # Merge the codes with the cities dataset
-#states_dataset.merge <-
-  #merge(state_group,
-       # hcmap.state_codes,
-        #by.x = "state_name",
-       # by.y = "name")
+states_dataset.merge <-
+  merge(state_group,
+        hcmap.state_codes,
+        by.x = "state_name",
+        by.y = "name")
 
-#states_dataset.merge$state_name <-
-  #as.factor(states_dataset.merge$state_name)
+states_dataset.merge$state_name <-
+  as.factor(states_dataset.merge$state_name)
 
 state_group$state_name <- as.factor(state_group$state_name)
 state_group$lng <- as.numeric(state_group$lng)

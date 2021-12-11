@@ -1,4 +1,31 @@
+#For Shiny integration
 library(shiny)
+
+#Libraries for prediction model
+library(tidyverse)
+library(caret)
+library(randomForest)
+library(owmr)
+
+#Prediction using Random Forest
+
+key = "71bc0174c0bc055562e89f563918d2a1"
+owmr_settings(key)
+
+data_pred = read.csv("data/final_severity.csv")
+data_pred = data_pred[,2:22]
+#View(data_pred)
+colnames(data_pred)
+choices_col <- c()
+set.seed(635)
+train_split <- createDataPartition(data_pred$Defective.brakes, p = 0.80, list = FALSE)
+train_data <- data_pred[train_split,]
+test_data <- data_pred[-train_split,]
+
+randomForest_model <- randomForest(Defective.brakes~., data=train_data, mtry=sqrt(12))
+
+Control_randomforest <- trainControl(method="repeatedcv", number=10, repeats = 10) 
+
 
 
 road <- read.csv(file = "data/injured1.csv")
@@ -123,14 +150,14 @@ shinyServer(function(input, output, session) {
     if (input$tab1_dropdown_states == "All") {
       valueBox(
         sum(states_dataset$persons_killed_2014),
-        "Total persons_killed_2014",
+        "Total Persons Killed in 2014",
         color = "purple",
         width = 6
       )
     } else{
       states_dataset_filtered <- filter(state_group, state_group$state_code == input$tab1_dropdown_states)
       valueBox(states_dataset_filtered$persons_killed_2014,
-               "Total persons_killed_2014",
+               "Total Persons Killed in 2014",
                color = "purple",
                width = 6)
     }
@@ -141,14 +168,14 @@ shinyServer(function(input, output, session) {
     if (input$tab1_dropdown_states == "All") {
       valueBox(
         sum(states_dataset$persons_killed_2015),
-        "Total persons_killed_2015",
+        "Total Persons Killed in 2015",
         color = "orange",
         width = 6
       )
     } else{
       states_dataset_filtered <- filter(state_group, state_group$state_code == input$tab1_dropdown_states)
       valueBox(states_dataset_filtered$persons_killed_2015,
-               "Total persons_killed_2015",
+               "Total Persons Killed in 2015",
                color = "orange",
                width = 6)
     }
@@ -159,32 +186,31 @@ shinyServer(function(input, output, session) {
     if (input$tab1_dropdown_states == "All") {
       valueBox(
         sum(states_dataset$persons_killed_2016),
-        "Total persons_killed_2016",
+        "Total Persons Killed in 2016",
         color = "green",
         width = 6
       )
     } else{
       states_dataset_filtered <- filter(state_group, state_group$state_code == input$tab1_dropdown_states)
       valueBox(states_dataset_filtered$persons_killed_2016,
-               "Total persons_killed_2016",
+               "Total Persons Killed in 2016",
                color = "green",
                width = 6)
     }
   })
   
-  # Total Female Population Percent Value Box output generation
   output$tab1_valuebox_persons_killed_2017 <- renderValueBox({
     if (input$tab1_dropdown_states == "All") {
       valueBox(
         sum(states_dataset$persons_killed_2017),
-        "Total persons_killed_2014",
+        "Total Persons Killed in 2017",
         color = "blue",
         width = 6
       )
     } else{
       states_dataset_filtered <- filter(state_group, state_group$state_code == input$tab1_dropdown_states)
       valueBox(states_dataset_filtered$persons_killed_2017,
-               "Total persons_killed_2017",
+               "Total Persons Killed in 2017",
                color = "blue",
                width = 6)
     }
@@ -197,12 +223,14 @@ shinyServer(function(input, output, session) {
     if (input$tab1_dropdown_states == "All") {
       hc <- highchart() %>%
         hc_chart(polar = TRUE)  %>%
+        hc_title(
+          text = "<b>Number of Persons Injured in:</b>",align = "center")%>%
         hc_xAxis(
           categories = c(
-            "persons_injured_2014",
-            "persons_injured_2015",
-            "persons_injured_2016",
-            "persons_injured_2017"
+            "2014",
+            "2015",
+            "2016",
+            "2017"
           ),
           tickmarkPlacement = "on",
           lineWidth = 0
@@ -233,12 +261,14 @@ shinyServer(function(input, output, session) {
       states_dataset_filtered <- filter(state_group, state_group$state_code == input$tab1_dropdown_states)
       hc <- highchart() %>%
         hc_chart(polar = TRUE)  %>%
+        hc_title(
+          text = "<b>Number of Persons Injured in:</b>",align = "center")%>%
         hc_xAxis(
           categories = c(
-            "persons_injured_2014",
-            "persons_injured_2015",
-            "persons_injured_2016",
-            "persons_injured_2017"
+            "2014",
+            "2015",
+            "2016",
+            "2017"
           ),
           tickmarkPlacement = "on",
           lineWidth = 0
@@ -1669,131 +1699,91 @@ shinyServer(function(input, output, session) {
     
     if(as.numeric(input$state)==1){
       df <- road
-      df$name_of_city<-df$states
       
     }
     
-    if(input$selectMap == 'p14')
+    if(input$selectMap == 'p10')
     {   
-      y <- df$persons_injured_2014
-      content <- paste("<b>",df$name_of_city,"</b></br>","<b>Number of Persons Injured in Road Accidents during - 2014</b>",y)
-      radius <- sqrt(df$persons_injured_2014)*800
+      y <- df$persons_killed_2014
+      content <- paste("<b>",df$state_name,"</b></br>","<b>Persons Killed in Road Accidents: 2014</b>",y)
+      radius <- sqrt(df$persons_killed_2014)*800
       pal <- colorNumeric(
         palette = "Dark2",
-        domain = df$persons_injured_2014
+        domain = df$persons_killed_2014
       )
-      stat <- "Number of Persons Injured in Road Accidents during - 2014"
+      stat <- "Persons Killed in Road Accidents: 2014"
+    }
+    else if(input$selectMap == 'p11')
+    {       y <- df$persons_killed_2015
+    content <- paste("<b>",df$state_name,"</b></br>","<b>Persons Killed in Road Accidents: 2015</b>",y)
+    radius <- sqrt(df$persons_killed_2015)*800
+    pal <- colorNumeric(
+      palette = "Dark2",
+      domain = df$persons_killed_2015
+    )
+    stat <- "Persons Killed in Road Accidents: 2015"
+    }
+    else if(input$selectMap == 'p12')
+    {       y <- df$persons_killed_2016
+    content <- paste("<b>",df$state_name,"</b></br>","<b>Persons Killed in Road Accidents: 2016</b>",y)
+    radius <- sqrt(df$persons_killed_2016)*800
+    pal <- colorNumeric(
+      palette = "Dark2",
+      domain = df$persons_killed_2015
+    )
+    stat <- "Persons Killed in Road Accidents: 2016"
+    }
+    else if(input$selectMap == 'p13')
+    {       y <- df$persons_killed_2017
+    content <- paste("<b>",df$state_name,"</b></br>","<b>Persons Killed in Road Accidents: 2017</b>",y)
+    radius <- sqrt(df$persons_killed_2017)*800
+    pal <- colorNumeric(
+      palette = "Dark2",
+      domain = df$persons_killed_2017
+    )
+    stat <- "Persons Killed in Road Accidents: 2017"
+    }
+    else if(input$selectMap == 'p14')
+    {       y <- df$persons_injured_2014
+    content <- paste("<b>",df$state_name,"</b></br>","<b>Persons Injured in Road Accidents: 2014</b>",y)
+    radius <- sqrt(df$persons_injured_2014)*800
+    pal <- colorNumeric(
+      palette = "Dark2",
+      domain = df$persons_injured_2014
+    )
+    stat <- "Persons Injured in Road Accidents: 2014"
     }
     else if(input$selectMap == 'p15')
     {       y <- df$persons_injured_2015
-    content <- paste("<b>",df$name_of_city,"</b></br>","<b>Number of Persons Injured in Road Accidents during - 2015</b>",y)
+    content <- paste("<b>",df$state_name,"</b></br>","<b>Persons Injured in Road Accidents: 2015</b>",y)
     radius <- sqrt(df$persons_injured_2015)*800
     pal <- colorNumeric(
       palette = "Dark2",
       domain = df$persons_injured_2015
     )
-    stat <- "Number of Persons Injured in Road Accidents during - 2015"
+    stat <- "Persons Injured in Road Accidents: 2015"
     }
     else if(input$selectMap == 'p16')
     {       y <- df$persons_injured_2016
-    content <- paste("<b>",df$name_of_city,"</b></br>","<b>Number of Persons Injured in Road Accidents during - 2016</b>",y)
+    content <- paste("<b>",df$state_name,"</b></br>","<b>Persons Injured in Road Accidents: 2016</b>",y)
     radius <- sqrt(df$persons_injured_2016)*800
     pal <- colorNumeric(
       palette = "Dark2",
       domain = df$persons_injured_2016
     )
-    stat <- "Number of Persons Injured in Road Accidents during - 2016"
+    stat <- "Persons Injured in Road Accidents: 2016"
     }
     else if(input$selectMap == 'p17')
     {       y <- df$persons_injured_2017
-    content <- paste("<b>",df$name_of_city,"</b></br>","<b>Number of Persons Injured in Road Accidents during - 2017</b>",y)
+    content <- paste("<b>",df$state_name,"</b></br>","<b>Persons Injured in Road Accidents: 2017</b>",y)
     radius <- sqrt(df$persons_injured_2017)*800
     pal <- colorNumeric(
       palette = "Dark2",
       domain = df$persons_injured_2017
     )
-    stat <- "Number of Persons Injured in Road Accidents during - 2017"
+    stat <- "Persons Injured in Road Accidents: 2017"
     }
-    else if(input$selectMap == 'p18')
-    {       y <- df$Weather_condition_fine_TotalAccidents2016
-    content <- paste("<b>",df$name_of_city,"</b></br>","<b>Road Accidents due to Weather Condition: Fine/Clear </b>",y)
-    radius <- sqrt(df$Weather_condition_fine_TotalAccidents2016)*1000
-    pal <- colorNumeric(
-      palette = "Dark2",
-      domain = df$Weather_condition_fine_TotalAccidents2016
-    )
-    stat <- "Road Accidents due to Weather Condition: Fine/Clear "
-    }
-    else if(input$selectMap == 'p19')
-    {       y <- df$Weather_condition_Mist_Foggy_TotalAccidents2016
-    content <- paste("<b>",df$name_of_city,"</b></br>","<b>Road Accidents due to Weather Condition: Mist/Foggy </b>",y)
-    radius <- sqrt(df$Weather_condition_Mist_Foggy_TotalAccidents2016)*1500
-    pal <- colorNumeric(
-      palette = "Dark2",
-      domain = df$Weather_condition_Mist_Foggy_TotalAccidents2016
-    )
-    stat <- "Road Accidents due to Weather Condition: Mist/Foggy "
-    }
-    else if(input$selectMap == 'p20')
-    {       y <- df$Weather_condition_cloudy_TotalAccidents2016
-    content <- paste("<b>",df$name_of_city,"</b></br>","<b>Road Accidents due to Weather Condition: Cloudy </b>",y)
-    radius <- sqrt(df$Weather_condition_cloudy_TotalAccidents2016)*2000
-    pal <- colorNumeric(
-      palette = "Dark2",
-      domain = df$Weather_condition_cloudy_TotalAccidents2016
-    )
-    stat <- "Road Accidents due to Weather Condition: Cloudy "
-    }
-    else if(input$selectMap == 'p21')
-    {       y <- df$Weather_condition_rainy_TotalAccidents2016
-    content <- paste("<b>",df$name_of_city,"</b></br>","<b>Road Accidents due to Weather Condition: Rainy </b>",y)
-    radius <- sqrt(df$Weather_condition_rainy_TotalAccidents2016)*2000
-    pal <- colorNumeric(
-      palette = "Dark2",
-      domain = df$Weather_condition_rainy_TotalAccidents2016
-    )
-    stat <- "Road Accidents due to Weather Condition: Rainy "
-    }
-    else if(input$selectMap == 'p22')
-    {       y <- df$Weather_condition_snow_TotalAccidents2016
-    content <- paste("<b>",df$name_of_city,"</b></br>","<b>Road Accidents due to Weather Condition: Snow </b>",y)
-    radius <- sqrt(df$Weather_condition_snow_TotalAccidents2016)*10000
-    pal <- colorNumeric(
-      palette = "Dark2",
-      domain = df$Weather_condition_snow_TotalAccidents2016
-    )
-    stat <- "Road Accidents due to Weather Condition: Snow "
-    }
-    else if(input$selectMap == 'p23')
-    {       y <- df$Weather_condition_hail_TotalAccidents2016
-    content <- paste("<b>",df$name_of_city,"</b></br>","<b>Road Accidents due to Weather Condition: Hail/Sleet </b>",y)
-    radius <- sqrt(df$Weather_condition_hail_TotalAccidents2016)*4000
-    pal <- colorNumeric(
-      palette = "Dark2",
-      domain = df$Weather_condition_hail_TotalAccidents2016
-    )
-    stat <- "Road Accidents due to Weather Condition: Hail/Sleet "
-    }
-    else if(input$selectMap == 'p24')
-    {       y <- df$Weather_condition_duststorm_TotalAccidents2016
-    content <- paste("<b>",df$name_of_city,"</b></br>","<b>Road Accidents due to Weather Condition: Dust Storm </b>",y)
-    radius <- sqrt(df$Weather_condition_duststorm_TotalAccidents2016)*2000
-    pal <- colorNumeric(
-      palette = "Dark2",
-      domain = df$Weather_condition_duststorm_TotalAccidents2016
-    )
-    stat <- "Road Accidents due to Weather Condition: Dust Storm "
-    }
-    else if(input$selectMap == 'p25')
-    {       y <- df$Weather_condition_others_TotalAccidents2016
-    content <- paste("<b>",df$name_of_city,"</b></br>","<b>Road Accidents due to Weather Condition: Others </b>",y)
-    radius <- sqrt(df$Weather_condition_others_TotalAccidents2016)*1200
-    pal <- colorNumeric(
-      palette = "Dark2",
-      domain = df$Weather_condition_others_TotalAccidents2016
-    )
-    stat <- "Road Accidents due to Weather Condition: Others "
-    }
+    
     
     
     
@@ -1805,5 +1795,174 @@ shinyServer(function(input, output, session) {
     
     m
   })
+  
+  
+  #########################################
+  #    TAB 5- Statewise distribution Map  #
+  #########################################
+  
+  output$tab2_bubble_map <- renderHighchart({
+    if (input$map.type.filter == "all_view") {
+      hc <-
+        hcmap(
+          "countries/in/custom/in-all-andaman-and-nicobar",
+          data = states_dataset.merge,
+          value = input$attribute.filters,
+          joinBy = c("hc-a2", "hc-a2"),
+          name = input$attribute.filters,
+          dataLabels = list(enabled = TRUE, format = "{point.name}"),
+          borderColor = "#FAFAFA",
+          borderWidth = 0.1,
+          tooltip = list(valueDecimals = 2)
+        ) %>% hc_colorAxis(minColor = "blue",
+                           maxColor = "red",
+                           stops = color_stops(n = 5)) %>%hc_mapNavigation(enabled = TRUE)
+      
+      hc
+      
+      
+      
+    } 
+    else{
+      if (input$attribute.filters == "persons_injured_2014") {
+        top.states<- state_group %>% arrange(desc(persons_injured_2014))
+        top.states.20<- top.states[1:20, ]
+        sel_attr <- top.states.20$persons_injured_2014
+      }else{
+        top.states <- state_group  %>% mutate(desc(persons_injured_2014))
+        top.states.20 <- top.states[1:20, ]
+        sel_attr <- top.states.20$persons_injured_2014
+      }  
+                          
+      
+      cities_20 <- data_frame(
+        name= top.states.20$state_name,
+        lat = top.states.20$lat,
+        lng = top.states.20$lng,
+        z = sel_attr,
+        color = colorize(z)
+      )
+      
+      hcmap(
+        "countries/in/custom/in-all-andaman-and-nicobar",
+        showInLegend = FALSE,
+        borderColor = "black",
+        borderWidth = 1
+      ) %>%
+        hc_add_series(
+          data = cities_20,
+          type = "mapbubble",
+          name = "States",
+          maxSize = '10%',
+          dataLabels = list(enabled = TRUE, format = '{point.name}'),
+          showInLegend = FALSE
+        )
+    }
+  })
+  
+  #######################################
+  #       TAB5 State-wise Map - END     #
+  #######################################
+  
+  
+  #######################################
+  #       TAB6 PREDICTION - Start       #
+  ####################################### 
+  
+  
+  
+  
+  df_choice <- reactive({
+    state <- input$tab5_dropdown_states
+    choice <- input$choice.checkbox.filter
+    if(!is_null(choice)) {
+      choices_col <- append(choices_col, choice)
+    }
+    city_name = "lucknow"
+    weather = (res <- get_current(city_name, units = "metric") %>% owmr_as_tibble())
+    weather_id <- weather$weather_id
+    if(weather_id>=200 & weather_id<=232)
+    {
+      weather_severity = 7;
+    }
+    else if(weather_id>=300 & weather_id<=321)
+    {
+      weather_severity = 3;
+    }
+    else if(weather_id>=500 & weather_id<=531)
+    {
+      weather_severity = 4;
+    }
+    else if(weather_id>=600 & weather_id<=622)
+    {
+      weather_severity = 5;
+    }
+    else if(weather_id==731) 
+    {
+      weather_severity = 2;
+    }
+    else if(weather_id==741) 
+    {
+      weather_severity = 5;
+    }
+    else if(weather_id>=800 & weather_id<=804) 
+    {
+      weather_severity = 1;
+    }
+    else if(weather_id>=700 & weather_id<800) 
+    {
+      weather_severity = 3;
+    }
+    input_choices <- c("Defective.brakes", "Defective.Steering", "Punctured.burst.Tyres","Bald.Tyres", "Other.serious.mechanical.defect", "Metalled.Roads", "Pucca.road..Normal.Road.", "Kutcha.Roads", "Loose.Surface", "Road.under.repair.construction", "Corrugated.Wavy.road", "Snowy", "Muddy", "Slight.Curve", "Flat.Road", "Gentle.Incline", "Pot.Holes", "Speed.Breaker", "Steep.Incline", "Sharp.Curve", "Others.road.conditions")
+    
+    check_list = vector("logical", 21)
+    for(i in choices_col) {
+      index <- which(input_choices == i)
+      check_list[index] = TRUE;
+    }
+    state_data = subset(data_pred, state_code == state)
+    total = weather_severity
+    count = 1
+    for(i in seq(3:21))
+    {
+      if(check_list[i]==TRUE)
+      {
+        total= total + state_data[,i]
+        count= count+1
+      }
+    }
+    final_val = ceiling(total/count)
+    ans <- NULL
+    if(final_val == 1) {
+      ans <- "Very low risk"
+    }
+    else if(final_val == 2) {
+      ans<- "Low risk"
+    }
+    else if(final_val == 3) {
+      ans<- "Low to Moderate risk"
+    }
+    else if(final_val == 4) {
+      ans<- "Moderate risk"
+    }
+    else if(final_val == 5) {
+      ans<- "Moderate to High risk"
+    }
+    else if(final_val == 6) {
+      ans<- "High risk"
+    }
+    else if(final_val == 7) {
+      ans<- "Very high risk"
+    }
+    ans
+  })
+  
+  output$prediction <- renderText({
+    df_choice()
+  })
+  
+  #######################################
+  # TAB6 PREDICTION - END               #
+  #######################################
   
 })

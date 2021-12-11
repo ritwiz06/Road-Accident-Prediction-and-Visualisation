@@ -12,57 +12,19 @@ states_dataset$state_code <- as.factor(states_dataset$state_code)
 states.codes <- unique(states_dataset$state_code)
 road <- read.csv(file = "data/injured1.csv")
 
+# INput Choices for Prediction Tab
+input_choices <- c("Defective.Steering", "Punctured.burst.Tyres", "Bald.Tyres", "Other.serious.mechanical.defect", "Metalled.Roads", "Pucca.road..Normal.Road.", "Kutcha.Roads", "Loose.Surface", "Road.under.repair.construction", "Corrugated.Wavy.road", "Snowy", "Muddy", "Slight.Curve", "Flat.Road", "Gentle.Incline", "Pot.Holes", "Speed.Breaker", "Steep.Incline", "Sharp.Curve", "Others.road.conditions")
+
 # Options Names to display values on Map
 var <- c(
-  "Number of Persons Killed in Road Accidents during - 2014" = "p10",
-  "Number of Persons Killed in Road Accidents during - 2015" = "p11",
-  "Number of Persons Killed in Road Accidents during - 2016" = "p12",
-  "Number of Persons Killed in Road Accidents during - 2017" = "p13",
-  "Number of Persons Injured in Road Accidents during - 2014" = "p14",
-  "Number of Persons Injured in Road Accidents during - 2015" = "p15",
-  "Number of Persons Injured in Road Accidents during - 2016" = "p16",
-  "Number of Persons Injured in Road Accidents during - 2017" = "p17",
-  "Road Accidents due to Weather Condition: Fine/Clear " = "p18",
-  "Road Accidents due to Weather Condition: Mist/Foggy " = "p19",
-  "Road Accidents due to Weather Condition: Cloudy " = "p20",
-  "Road Accidents due to Weather Condition: Rainy " = "p21",
-  "Road Accidents due to Weather Condition: Flooding " = "p22",
-  "Road Accidents due to Weather Condition: Hail/Sleet " = "p23",
-  "Road Accidents due to Weather Condition: Snow " = "p24",
-  "Road Accidents due to Weather Condition: Dust Storm " = "p25",
-  "Road Accidents due to Weather Condition: Other Extreme Weather Conditions " = "p26",
-  "Road Accidents due to Road Condition: Surfaced " = "p27",
-  "Road Accidents due to Road Condition: Metalled " = "p28",
-  "Road Accidents due to Road Condition: Normal / Pucca " = "p29",
-  "Road Accidents due to Road Condition: Kutcha " = "p30",
-  "Road Accidents due to Road Condition: Dry " = "p31",
-  "Road Accidents due to Road Condition: Wet " = "p32",
-  "Road Accidents due to Road Condition: Good Surface " = "p33",
-  "Road Accidents due to Road Condition: Loose Surface " = "p34",
-  "Road Accidents due to Road Condition: Under Construction/Repairing " = "p35",
-  "Road Accidents due to Road Condition: Corrugated " = "p36",
-  "Road Accidents due to Road Condition: Slippery " = "p37",
-  "Road Accidents due to Road Condition: Snowy " = "p38",
-  "Road Accidents due to Road Condition: Muddy " = "p39",
-  "Road Accidents due to Road Condition: Oily " = "p40",
-  "Road Accidents due to Road Condition: Straight " = "p41",
-  "Road Accidents due to Road Condition: SlightCurve " = "p42",
-  "Road Accidents due to Road Condition: Flat " = "p43",
-  "Road Accidents due to Road Condition: Gentle Incline " = "p44",
-  "Road Accidents due to Road Condition: Humps " = "p45",
-  "Road Accidents due to Road Condition: Dip " = "p46",
-  "Road Accidents due to Road Condition: Pot Holes " = "p47",
-  "Road Accidents due to Road Condition: Speed breaker " = "p48",
-  "Road Accidents due to Road Condition: Steep Incline " = "p49",
-  "Road Accidents due to Road Condition: Sharp Curve " = "p50",
-  "Road Accidents due to Road Condition: Earthern Shoulder Edge Drop " = "p51",
-  "Road Accidents due to Road Condition: Others " = "p52",
-  "Road Accidents due to Vehicle Condition: Defective Brakes " = "p53",
-  "Road Accidents due to Vehicle Condition: Defective Steering " = "p54",
-  "Road Accidents due to Vehicle Condition: Defective Punctured/Burst Tyres " = "p55",
-  "Road Accidents due to Vehicle Condition: Defective Bald Tyres " = "p56",
-  "Road Accidents due to Vehicle Condition: Defective Worn Out tyres " = "p57",
-  "Road Accidents due to Vehicle Condition: Other Mechanical Defects " = "p58"
+  "Persons Killed in Road Accidents: 2014" = "p10",
+  "Persons Killed in Road Accidents: 2015" = "p11",
+  "Persons Killed in Road Accidents: 2016" = "p12",
+  "Persons Killed in Road Accidents: 2017" = "p13",
+  "Persons Injured in Road Accidents: 2014" = "p14",
+  "Persons Injured in Road Accidents: 2015" = "p15",
+  "Persons Injured in Road Accidents: 2016" = "p16",
+  "Persons Injured in Road Accidents: 2017" = "p17"
   
 )
 
@@ -74,48 +36,8 @@ list_select <- c(
   "Number of Persons Injured in Road Accidents during - 2014" = 5,
   "Number of Persons Injured in Road Accidents during - 2015" = 6,
   "Number of Persons Injured in Road Accidents during - 2016" = 7,
-  "Number of Persons Injured in Road Accidents during - 2017" = 8,
-  "Road Accidents due to Weather Condition: Fine/Clear " = 9,
-  "Road Accidents due to Weather Condition: Mist/Foggy " = 10,
-  "Road Accidents due to Weather Condition: Cloudy " = 11,
-  "Road Accidents due to Weather Condition: Rainy " = 12,
-  "Road Accidents due to Weather Condition: Flooding " = 13,
-  "Road Accidents due to Weather Condition: Hail/Sleet " = 14,
-  "Road Accidents due to Weather Condition: Snow " = 15,
-  "Road Accidents due to Weather Condition: Dust Storm " = 16,
-  "Road Accidents due to Weather Condition: Other Extreme Weather Conditions " = 17,
-  "Road Accidents due to Road Condition: Surfaced " = 18,
-  "Road Accidents due to Road Condition: Metalled " = 19,
-  "Road Accidents due to Road Condition: Normal / Pucca " = 20,
-  "Road Accidents due to Road Condition: Kutcha " = 21,
-  "Road Accidents due to Road Condition: Dry " = 22,
-  "Road Accidents due to Road Condition: Wet " = 23,
-  "Road Accidents due to Road Condition: Good Surface " = 24,
-  "Road Accidents due to Road Condition: Loose Surface " = 25,
-  "Road Accidents due to Road Condition: Under Construction/Repairing " = 26,
-  "Road Accidents due to Road Condition: Corrugated " = 27,
-  "Road Accidents due to Road Condition: Slippery " = 28,
-  "Road Accidents due to Road Condition: Snowy " = 29,
-  "Road Accidents due to Road Condition: Muddy " = 30,
-  "Road Accidents due to Road Condition: Oily " = 31,
-  "Road Accidents due to Road Condition: Straight " = 32,
-  "Road Accidents due to Road Condition: SlightCurve " = 33,
-  "Road Accidents due to Road Condition: Flat " = 34,
-  "Road Accidents due to Road Condition: Gentle Incline " = 35,
-  "Road Accidents due to Road Condition: Humps " = 36,
-  "Road Accidents due to Road Condition: Dip " = 37,
-  "Road Accidents due to Road Condition: Pot Holes " = 38,
-  "Road Accidents due to Road Condition: Speed breaker " = 39,
-  "Road Accidents due to Road Condition: Steep Incline " = 40,
-  "Road Accidents due to Road Condition: Sharp Curve " = 41,
-  "Road Accidents due to Road Condition: Earthern Shoulder Edge Drop " = 42,
-  "Road Accidents due to Road Condition: Others " = 43,
-  "Road Accidents due to Vehicle Condition: Defective Brakes " = 44,
-  "Road Accidents due to Vehicle Condition: Defective Steering " = 45,
-  "Road Accidents due to Vehicle Condition: Defective Punctured/Burst Tyres " = 46,
-  "Road Accidents due to Vehicle Condition: Defective Bald Tyres " = 47,
-  "Road Accidents due to Vehicle Condition: Defective Worn Out tyres " = 48,
-  "Road Accidents due to Vehicle Condition: Other Mechanical Defects " = 49
+  "Number of Persons Injured in Road Accidents during - 2017" = 8
+  
 )
 
 map.view.options.names <-
@@ -307,13 +229,14 @@ navbarPage(
         valueBoxOutput("tab1_valuebox_persons_killed_2017", width = 6),
         
         # Initializing the polar chart/ spider chart
+        
         highchartOutput("tab1_polar_plot", height = 400)
 
       )
     )
   ),
   # Tab 2 - MAP
-  tabPanel(title="Maps", sidebarLayout(
+  tabPanel(title="Injured/Killed Distribution", sidebarLayout(
     sidebarPanel(
       radioButtons(inputId = "state",label="",choices = c("State"=1)),p(),
       selectInput("selectMap", label ="Select Statistic", 
@@ -1113,9 +1036,147 @@ tabPanel(
   )
 ),
 ##Tab 5
-
-
-conditionalPanel("false", icon("crosshair"))
+tabPanel(
+  "Conditons Causing Accidents",
+  dashboardPage(
+    dashboardHeader(disable = T),
+    dashboardSidebar(disable = T),
+    dashboardBody(
+      tags$script(
+        'window.onload = function() {
+          function fixBodyHeight() {
+          var el = $(document.getElementsByClassName("content-wrapper")[0]);
+          var h = el.height();
+          el.css("min-height", h + 50 + "px");
+          };
+          window.addEventListener("resize", fixBodyHeight);
+          fixBodyHeight();
+          };'
+      ),
+      fluidRow(
+        box(
+          # Radio button to switch between two Map Types
+          radioButtons(
+            "map.type.filter",
+            "",
+            choiceNames = mapply(
+              top.states.names,
+              top.states.icons,
+              FUN = function(state, iconUrl) {
+                tagList(tags$img(
+                  src = iconUrl,
+                  width = 35,
+                  height = 35
+                ),
+                state)
+              },
+              SIMPLIFY = FALSE,
+              USE.NAMES = FALSE
+            ),
+            choiceValues = top.states.values
+          ),
+          width = 2
+        ),
+        
+        column(width = 1),
+        
+        # Initializing the Highcharter Map
+        column(highchartOutput("tab2_bubble_map", height = "800px"),
+               width = 6),
+        
+        # Right Panel different attribute filters
+        box(
+          radioButtons(
+            "attribute.filters",
+            "",
+            choiceNames = mapply(
+              map.view.options.names,
+              map.view.options.icons,
+              FUN = function(country, flagUrl) {
+                tagList(tags$img(
+                  src = flagUrl,
+                  width = 0,
+                  height = 0
+                ),
+                country)
+              },
+              SIMPLIFY = FALSE,
+              USE.NAMES = FALSE
+            ),
+            choiceValues = map.view.options.values
+          ),
+          width = 3
+        )
+      )
+    )
   )
+),
+
+####################################
+#        TAB 6 PREDICTION          #
+####################################
+
+tabPanel(
+  "Prediction",
+  tags$head(tags$style(HTML(
+    "
+    div#checkGroup {
+    font-size: 75%;
+    }
+    "
+  ))),
+  sidebarLayout(
+    # Left Sidbar State Filter Panel
+    sidebarPanel(
+      h4("Select States"),
+      selectInput(
+        "tab5_dropdown_states",
+        NULL,
+        c(
+          structure(
+            by_state_order$state_code,
+            names = as.character(by_state_order$state_name)
+          )
+        )
+      ),
+      checkboxGroupInput(
+        "choice.checkbox.filter",
+        label = NULL,
+        choiceNames = input_choices,
+        choiceValues = input_choices
+      )
+      ,
+      width = 3
+    ),
+    mainPanel(box(
+      tabsetPanel(
+        tabPanel(
+          fluidRow(column(
+            8,
+            box(
+              title = "Predicted risk:",
+              
+              solidHeader = TRUE,
+              width = 12
+            )
+          ),
+          column(
+            9,offset=2, 
+            box(
+              status = "primary",
+              solidHeader = FALSE,
+              span(textOutput("prediction"), style="font-size:30px;color:blue"),
+              width = 30
+            )
+          )
+          )
+        )
+      )
+    ))
+  )
+),
+
+ conditionalPanel("false", icon("crosshair"))
+)
 
 
